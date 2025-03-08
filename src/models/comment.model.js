@@ -1,5 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-import mongooseAggregatePaginate from "mongooseAggregatePaginate";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
+// import mongooseAggregatePaginate from "mongooseAggregatePaginate";
+
 
 const commentSchema = new Schema({
     content:{
@@ -21,5 +23,5 @@ const commentSchema = new Schema({
     timestamps: true
  });
 
-videoSchema.plugin(mongooseAggregatePaginate)
+ commentSchema.plugin(aggregatePaginate)
 export const Comment = mongoose.model("Comment", commentSchema)
