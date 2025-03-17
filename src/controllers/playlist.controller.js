@@ -133,8 +133,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
 
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     const {playlistId, videoId} = req.params
-    // TODO: remove video from playlist
-
+   
     if (!playlistId || !videoId) {
         throw new ApiError(400, "Playlist ID and Video ID are required!");
     }
@@ -168,7 +167,6 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 
 const deletePlaylist = asyncHandler(async (req, res) => {
     const {playlistId} = req.params
-    // TODO: delete playlist
     if (!playlistId ) {
         throw new ApiError(400, "Playlist ID is required!");
     }
@@ -186,7 +184,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
         throw new ApiError(403, "You do not have permission to delete this playlist.");
     }
 
-    // (Optional) Remove playlist reference from videos before deleting the playlist
+    // TODOS: Remove playlist reference from videos before deleting the playlist
     // await Video.updateMany({ playlists: playlistId }, { $pull: { playlists: playlistId } });
 
     const deletedPlaylist  = await Playlist.findByIdAndDelete(playlistId);

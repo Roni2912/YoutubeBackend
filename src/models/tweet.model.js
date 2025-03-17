@@ -7,7 +7,10 @@ const tweetSchema = new Schema({
     },
     content : {
         type: String,
-        required: true
+        required: true,
+        trim: true,
+        maxlength: [280, "Tweet cannot exceed 280 characters"]
+
     }
 }, {
     timestamps: true
