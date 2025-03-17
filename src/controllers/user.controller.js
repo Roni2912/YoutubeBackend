@@ -22,15 +22,6 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 const registerUser = asyncHandler( async (req, res) => {
-    // get user details from frontend
-    // validation - not empty
-    // check if user already exists: username, email
-    // check for image, check for avatar
-    // upload them to cloudinary, avatar
-    // create user object - create entry in db
-    // remove password and refreshToken from response
-    // check for user creation 
-    // return response
 
     const { fullName, email, username, password } = req.body;
 
@@ -92,14 +83,6 @@ const registerUser = asyncHandler( async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-    // get user details from frontend
-    // validation - not empty
-    // check if user exists: username, email
-    // check for password
-    // access access token and refresh token
-    // send cookies 
-    // generate jwt token
-    // return response
 
     const { username, email, password } = req.body;
 
