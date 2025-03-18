@@ -4,11 +4,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import User from "../models/user.model.js";
 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
-    // get access token from cookies
-    // check if access token exists
-    // verify access token
-    // send response
-
    try {
     const token = req.cookies?.accessToken || req.headers("Authorization")?.replace("Bearer ", "");
 

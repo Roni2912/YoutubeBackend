@@ -30,7 +30,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
         const { userId } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return next(new ApiError(400, "Invalid userId format"));;
+            throw new ApiError(400, "Invalid userId format");
         }
         
         if(!userId){
@@ -54,18 +54,17 @@ const updateTweet = asyncHandler(async (req, res) => {
         const { content } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(tweetId)) {
-            return next(new ApiError(400, "Invalid tweetId format"));;
+           throw new ApiError(400, "Invalid tweetId format");
         }
         
-
         if (!content) {
-            return next(new ApiError(400, "Content is required"));
+            throw new ApiError(400, "Content is required");
         }
 
         const updatedTweet = await Tweet.findByIdAndUpdate( tweetId, {content:content},{new: true, runValidators: true}).select("content");
 
         if (!updatedTweet) {
-            return next(new ApiError(404, "Tweet not found"));
+           throw new ApiError(404, "Tweet not found");
         }
 
         return res.status(200).json(new ApiResponse(200,updatedTweet,"Tweet updated successfully"))
@@ -75,16 +74,16 @@ const deleteTweet = asyncHandler(async (req, res) => {
         const { tweetId } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(tweetId)) {
-            return next(new ApiError(400, "Invalid tweetId format"));;
+            throw new ApiError(400, "Invalid tweetId format");
         }
 
         const tweet = await Tweet.findById(tweetId);
         if (!tweet) {
-            return next(new ApiError(404, "Tweet not found"));
+            throw new ApiError(404, "Tweet not found");
         }
 
         if(tweet.owner.toString() !== req.user._id.toString()){
-            return next(new ApiError(403, "Unauthorized: You can only delete your own tweet"));
+            throw new ApiError(403, "Unauthorized: You can only delete your own tweet");
         }
 
         await Tweet.findByIdAndDelete(tweetId);

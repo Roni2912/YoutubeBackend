@@ -1,10 +1,8 @@
-import mongoose, {isValidObjectId} from "mongoose"
+import mongoose from "mongoose"
 import Playlist from "../models/playlist.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
-import { json } from "express"
-
 
 const createPlaylist = asyncHandler(async (req, res) => {
     const {name, description} = req.body
@@ -23,7 +21,6 @@ const createPlaylist = asyncHandler(async (req, res) => {
         throw new ApiError(400,"Unauthorized: User not found")
     }
 
-    //Optional: check existing playlist 
     const existingPlayList = await Playlist.findOne({name: name.trim(), owner: user._id});
     if (existingPlayList) {
         throw new ApiError(400,"Playlist with this name already exists")
@@ -43,7 +40,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
     )
 
 
-})
+});
 
 const getUserPlaylists = asyncHandler(async (req, res) => {
     const {userId} = req.params
@@ -63,7 +60,6 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).json(new ApiResponse(200,userPlayList,"PlayList fetched successfully" ));
-
 
     // TODO : For LoggedIn user playList
     // const userId = req.user?._id; // Get logged-in user ID
