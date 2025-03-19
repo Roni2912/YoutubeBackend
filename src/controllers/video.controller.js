@@ -91,7 +91,6 @@ const publishAVideo = asyncHandler(async (req, res) => {
     const videoFile = await  uploadOnCloudinary(videoLocalPath);
     const thumbnail = thumbnailLocalPath ? await  uploadOnCloudinary(thumbnailLocalPath) : null;
 
-    console.log("videoFile :", videoFile)
     if(!videoFile?.url){
         throw new ApiError(400, "Failed to upload video on Cloudinary")
     }
@@ -104,15 +103,12 @@ const publishAVideo = asyncHandler(async (req, res) => {
         duration : videoFile?.duration || 0
     });
 
-    console.log(video);
-    
-
     if(!video){
         throw new ApiError(500, "Something went wrong while uploading video")
     }
 
     return res
-    .status(200)
+    .status(201)
     .json(
         new ApiResponse(
             200,
@@ -124,7 +120,6 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    //TODO: get video by id
 
     const video = await Video.findById(videoId);
 
@@ -205,7 +200,6 @@ const updateVideo = asyncHandler(async (req, res) => {
 
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    //TODO: delete video
 
     if(!videoId){
         throw new ApiError(400,"Video ID is required")

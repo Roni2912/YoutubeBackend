@@ -17,25 +17,31 @@ const getVideoComments = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Video not found");
     }
 
-    const options = {
-     page: parseInt(page),
-     limit: parseInt(limit)
-     };
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+
+    const totalComments = await Comment.countDocuments({ video: videoId });
+
+    if (totalComments === 0) {
+        throw new ApiError(404, "No comments found for this video!");
+    }
     
-    const getVideoComment = await Comment.find({ video: videoId })
+    const comments = await Comment.find({ video: videoId })
     .select("content owner createdAt")
     .populate("owner", "name email")
     .sort({ createdAt: -1 })
-    .skip((options.page - 1) * options.limit)
-    .limit(options.limit);;
-    
-    if (getVideoComment.length === 0) {
-        throw new ApiError(404, "No comments found for this video!");
-    }
+    .skip((pageNum - 1) * limitNum)
+    .limit(limitNum);
 
     return res
     .status(200)
-    .json( new ApiResponse(200, getVideoComment,"Comments fetched Successfully" ))
+    .json( new ApiResponse(200, { 
+        comments,
+        totalComments,
+        totalPages: Math.ceil(totalComments / limitNum),
+        currentPage: pageNum
+    },
+        "Comments fetched Successfully" ))
 
 })
 
@@ -58,11 +64,32 @@ const addComment = asyncHandler(async (req, res) => {
 
     const newComment = await Comment.create({
         content,
-        video: videoId, 
+        video: [videoId], 
         owner: req.user._id
     });
 
-    return res.status(201).json( new ApiResponse(201, newComment,"Comment added successfully"))
+    const populatedComment = await Comment.aggregate([
+        { $match: { _id: newComment._id } },
+        { 
+            $lookup: { 
+                from: "videos", 
+                localField: "video", 
+                foreignField: "_id", 
+                as: "videoDetails" 
+            } 
+        },
+        { 
+            $lookup: { 
+                from: "users", 
+                localField: "owner", 
+                foreignField: "_id", 
+                as: "ownerDetails" 
+            } 
+        },
+        { $unwind: "$ownerDetails" }, 
+    ]);
+
+    return res.status(201).json( new ApiResponse(201, populatedComment[0],"Comment added successfully"))
 });
 
 const updateComment = asyncHandler(async (req, res) => {
@@ -83,8 +110,8 @@ const updateComment = asyncHandler(async (req, res) => {
         { new: true, runValidators: true }
     );
 
-    if (!comment) {
-        throw new ApiError(404, "Comment not found or unauthorized");
+    if (comment.content === content) {
+        throw new ApiError(400, "No changes detected");
     }
 
     return res.status(200).json(new ApiResponse(200,comment,"Comment updated Successfully!"))
@@ -116,3 +143,14 @@ export {
     updateComment,
      deleteComment
     }
+
+
+
+ find({
+    $and: [
+        {age: {$gt: 25}},
+        {status: "active"}
+    ]
+ })   
+
+{$or: [{},{}]}
